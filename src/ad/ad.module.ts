@@ -10,6 +10,7 @@ import { ConditionsModule } from './submodules/conditions/conditions.module';
 import { CurrencyModule } from './submodules/currency/currency.module';
 import { SizesModule } from './submodules/sizes/sizes.module';
 import { DeliveryModule } from './submodules/delivery/delivery.module';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { DeliveryModule } from './submodules/delivery/delivery.module';
     CurrencyModule,
     SizesModule,
     DeliveryModule,
+    UserModule,
   ],
   exports: [AdService],
   providers: [AdService],

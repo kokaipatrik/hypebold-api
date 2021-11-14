@@ -10,6 +10,7 @@ import { ConditionsService } from './submodules/conditions/conditions.service';
 import { CurrencyService } from './submodules/currency/currency.service';
 import { SizesService } from './submodules/sizes/sizes.service';
 import { DeliveryService } from './submodules/delivery/delivery.service';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AdService {
@@ -22,6 +23,7 @@ export class AdService {
     private readonly currencyService: CurrencyService,
     private readonly sizesService: SizesService,
     private readonly deliveryService: DeliveryService,
+    private readonly userService: UserService,
   ) {}
 
   public async create(
@@ -45,6 +47,14 @@ export class AdService {
     await this.deliveryService.findById(ad.deliveryId);
 
     return ad.save();
+  }
+
+  public async addAdIdToUserCollection(userId: Types.ObjectId, adId: Types.ObjectId): Promise<any> {
+    await this.userService.findById(userId);
+    const ad = await this.userService.pushAdIdToAds(userId, adId);
+
+    if (ad) return ad;
+    throw new BadRequestException('Push operation failed.');
   }
 
   public async getAdsByCategoryUrl(url: string): Promise<any> {

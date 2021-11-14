@@ -22,7 +22,7 @@ export class User {
   updatedAt: Date;
 
   @Prop({ type: [Types.ObjectId], ref: 'Ad' })
-  ads: string;
+  ads: Array<Types.ObjectId>;
 }
 
 export type UserDocument = User & Document;

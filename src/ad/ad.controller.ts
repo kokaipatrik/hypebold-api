@@ -35,7 +35,9 @@ export class AdController {
     @Body() input: any,
   ) {
     try {
-      await this.adService.create(input, req.user.id);
+      const ad = await this.adService.create(input, req.user.id);
+      await this.adService.addAdIdToUserCollection(req.user.id, ad._id);
+
       return res.status(HttpStatus.OK).json({
         message: 'Ad has been created.',
       });
