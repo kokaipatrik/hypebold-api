@@ -6,6 +6,10 @@ import { Condition } from './schema/condition.schema';
 import { CreateConditionDto } from './dto/create-condition.dto';
 import { UpdateConditionDto } from './dto/update-condition.dto';
 
+export class ConditionWithId {
+  _id: Types.ObjectId;
+}
+
 @Injectable()
 export class ConditionsService {
   constructor(
@@ -24,7 +28,7 @@ export class ConditionsService {
     return await this.conditionRepository.find().exec();
   }
 
-  public async findByUrl(url: string): Promise<Condition> {
+  public async findByUrl(url: string): Promise<Condition & ConditionWithId> {
     const condition = await this.conditionRepository.findOne({ url: url });
     if (condition) return condition;
     else throw new BadRequestException('This condition is not exist!');

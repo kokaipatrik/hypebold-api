@@ -73,12 +73,18 @@ export class UserService {
     throw new BadRequestException('User is not exist!');
   }
 
-  public async pushAdIdToAds(userId: Types.ObjectId, adId: Types.ObjectId): Promise<User> {
-    const user = await this.userRepository.findOneAndUpdate({ _id: userId }, { 
-      $push: {
-        ads: adId,
+  public async pushAdIdToAds(
+    userId: Types.ObjectId,
+    adId: Types.ObjectId,
+  ): Promise<User> {
+    const user = await this.userRepository.findOneAndUpdate(
+      { _id: userId },
+      {
+        $push: {
+          ads: adId,
+        },
       },
-    });
+    );
 
     if (user) return user;
     throw new BadRequestException('Push operation failed.');

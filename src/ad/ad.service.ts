@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException  } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 
@@ -11,6 +11,43 @@ import { CurrencyService } from './submodules/currency/currency.service';
 import { SizesService } from './submodules/sizes/sizes.service';
 import { DeliveryService } from './submodules/delivery/delivery.service';
 import { UserService } from 'src/user/user.service';
+import { shoes } from './submodules/sizes/types/size.types';
+
+export class AdWithId {
+  _id: Types.ObjectId;
+}
+
+export interface TransformedData {
+  name: string;
+  id: Types.ObjectId;
+}
+
+export interface TransformedSizeData {
+  size: shoes | string;
+  id: Types.ObjectId;
+}
+
+export interface TransformedCurrencyData {
+  name: string;
+  currency: string;
+  id: Types.ObjectId;
+}
+
+export interface TransformedAd {
+  name: string;
+  price: number;
+  description: string;
+  town: string;
+  telephone: string;
+  images: Array<string>;
+  category: TransformedData;
+  brand: TransformedData;
+  condition: TransformedData;
+  currency: TransformedCurrencyData;
+  size: TransformedSizeData;
+  delivery: TransformedData;
+  userId: Types.ObjectId;
+}
 
 @Injectable()
 export class AdService {
@@ -49,7 +86,10 @@ export class AdService {
     return ad.save();
   }
 
-  public async addAdIdToUserCollection(userId: Types.ObjectId, adId: Types.ObjectId): Promise<any> {
+  public async addAdIdToUserCollection(
+    userId: Types.ObjectId,
+    adId: Types.ObjectId,
+  ): Promise<any> {
     await this.userService.findById(userId);
     const ad = await this.userService.pushAdIdToAds(userId, adId);
 
@@ -57,19 +97,87 @@ export class AdService {
     throw new BadRequestException('Push operation failed.');
   }
 
-  public async getAdsByCategoryUrl(url: string): Promise<any> {
-    const category = await this.categoryService.findByUrl(url);
+  public async getAdsByQueries(
+    categoryParam: string,
+    brandParam: string,
+    conditionParam: string,
+    sizeParam: string,
+  ): Promise<any> {
+    const category = categoryParam
+      ? await this.categoryService.findByUrl(categoryParam)
+      : null;
+    const brand = brandParam
+      ? await this.brandsService.findByUrl(brandParam)
+      : null;
+    const condition = conditionParam
+      ? await this.conditionsService.findByUrl(conditionParam)
+      : null;
+    const size = sizeParam
+      ? await this.sizesService.findByUrlAndCategoryId(sizeParam, category._id)
+      : null;
 
-    const ads = await this.adRepository.find({ categoryId: category._id }).exec();
-    if (ads.length) return ads;
-    throw new BadRequestException('This category is empty!');
+    const pipeline = { $match: {} };
+    const transformedAds = [];
+
+    if (category !== null) pipeline.$match['categoryId'] = category._id;
+    if (brand !== null) pipeline.$match['brandId'] = brand._id;
+    if (condition !== null) pipeline.$match['conditionId'] = condition._id;
+    if (size !== null) pipeline.$match['sizeId'] = size[0]._id;
+
+    const ads = await this.adRepository.aggregate([pipeline]);
+
+    if (ads.length) {
+      for (const ad of ads) {
+        transformedAds.push(await this.transformAdData(ad));
+      }
+      return transformedAds;
+    }
+    else throw new BadRequestException('Ads are not exist!');
   }
 
-  public async getAdsByBrandUrl(url: string): Promise<any> {
-    const category = await this.brandsService.findByUrl(url);
+  public async transformAdData(ad: Ad & AdWithId): Promise<TransformedAd> {
+    const category = await this.categoryService.findById(ad.categoryId);
+    const brand = await this.brandsService.findById(ad.brandId);
+    const condition = await this.conditionsService.findById(ad.conditionId);
+    const currency = await this.currencyService.findById(ad.currencyId);
+    const size = await this.sizesService.findById(ad.sizeId);
+    const delivery = await this.deliveryService.findById(ad.deliveryId);
 
-    const ads = await this.adRepository.find({ brandId: category._id }).exec();
-    if (ads.length) return ads;
-    throw new BadRequestException('This brand is empty!');
+    const transformedAdObject: TransformedAd = {
+      name: ad.name,
+      price: ad.price,
+      description: ad.description,
+      town: ad.town,
+      telephone: ad.telephone,
+      images: ad.images,
+      category: {
+        name: category.name,
+        id: ad.categoryId,
+      },
+      brand: {
+        name: brand.name,
+        id: ad.brandId,
+      },
+      condition: {
+        name: condition.name,
+        id: ad.conditionId,
+      },
+      currency: {
+        name: currency.name,
+        currency: currency.currency,
+        id: ad.currencyId,
+      },
+      size: {
+        size: size.size,
+        id: ad.sizeId,
+      },
+      delivery: {
+        name: delivery.name,
+        id: ad.deliveryId,
+      },
+      userId: ad.userId,
+    };
+
+    return transformedAdObject;
   }
 }

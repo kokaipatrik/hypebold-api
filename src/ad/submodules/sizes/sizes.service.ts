@@ -9,6 +9,10 @@ import { CreateSizeDto } from './dto/create-size.dto';
 import { UpdateSizeDto } from './dto/update-size.dto';
 import { CategoryService } from '../category/category.service';
 
+export class SizeWithId {
+  _id: Types.ObjectId;
+}
+
 @Injectable()
 export class SizesService {
   constructor(
@@ -57,5 +61,31 @@ export class SizesService {
       throw new BadRequestException('Invalid size format!');
     } else if (typeof size == 'string') return true;
     throw new BadRequestException('Invalid size format!');
+  }
+
+  public async findByUrlAndCategoryId(
+    url: string,
+    categoryId: Types.ObjectId,
+  ): Promise<Array<Size & SizeWithId>> {
+    let size: number | string;
+    let sizeFilter = 'size';
+
+    if (url.match(/\d+/g)) {
+      const splittedUrl = url.split('-');
+      sizeFilter += `.${splittedUrl[0]}`;
+      size = Number(splittedUrl[1]);
+    } else size = url;
+
+    const filteredSize = await this.sizeRepository.aggregate([
+      {
+        $match: {
+          categoryId: categoryId,
+          [sizeFilter]: size,
+        },
+      },
+    ]);
+
+    if (filteredSize.length) return filteredSize;
+    else throw new BadRequestException('This size is not exist!');
   }
 }

@@ -55,7 +55,10 @@ export class DeliveryController {
   @Get('/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  public async getDeliveryById(@Res() res: any, @Param('id') id: Types.ObjectId) {
+  public async getDeliveryById(
+    @Res() res: any,
+    @Param('id') id: Types.ObjectId,
+  ) {
     try {
       const delivery = await this.deliveryService.findById(id);
       return res.status(HttpStatus.OK).json({

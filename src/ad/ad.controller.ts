@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Param,
+  Query,
   Res,
   Body,
   HttpStatus,
@@ -29,11 +30,7 @@ export class AdController {
   @Post('create')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'user')
-  public async createAd(
-    @Req() req: any,
-    @Res() res: any,
-    @Body() input: any,
-  ) {
+  public async createAd(@Req() req: any, @Res() res: any, @Body() input: any) {
     try {
       const ad = await this.adService.create(input, req.user.id);
       await this.adService.addAdIdToUserCollection(req.user.id, ad._id);
@@ -48,19 +45,19 @@ export class AdController {
     }
   }
 
-  @UseInterceptors(FilesInterceptor('image', 6, {
-    dest: './images',
-    fileFilter: ImageFileFilter,
-    limits: {
-      fileSize: 2097152,
-    },
-  }))
+  @UseInterceptors(
+    FilesInterceptor('image', 6, {
+      dest: './images',
+      fileFilter: ImageFileFilter,
+      limits: {
+        fileSize: 2097152,
+      },
+    }),
+  )
   @Post('upload-images')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'user')
-  public uploadFile(
-    @UploadedFiles() image: Express.Multer.File,
-  ) {
+  public uploadFile(@UploadedFiles() image: Express.Multer.File) {
     return {
       files: image,
     };
@@ -71,10 +68,21 @@ export class AdController {
     return res.sendFile(image, { root: './images' });
   }
 
-  @Get('categoryUrl/:categoryUrl')
-  public async getAdsByCategoryUrl(@Param('categoryUrl') categoryUrl, @Res() res) {
+  @Get('queries?')
+  public async getAdsByQueries(
+    @Query('category') category,
+    @Query('brand') brand,
+    @Query('condition') condition,
+    @Query('size') size,
+    @Res() res,
+  ) {
     try {
-      const ads = await this.adService.getAdsByCategoryUrl(categoryUrl);
+      const ads = await this.adService.getAdsByQueries(
+        category,
+        brand,
+        condition,
+        size,
+      );
       return res.status(HttpStatus.OK).json({
         data: ads,
       });
@@ -82,20 +90,6 @@ export class AdController {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: err.message,
       });
-    } 
-  }
-
-  @Get('brandUrl/:brandUrl')
-  public async getAdsByBrandUrl(@Param('brandUrl') brandUrl, @Res() res) {
-    try {
-      const ads = await this.adService.getAdsByBrandUrl(brandUrl);
-      return res.status(HttpStatus.OK).json({
-        data: ads,
-      });
-    } catch (err) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        message: err.message,
-      });
-    } 
+    }
   }
 }
