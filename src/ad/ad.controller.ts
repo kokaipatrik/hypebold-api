@@ -74,6 +74,8 @@ export class AdController {
     @Query('brand') brand,
     @Query('condition') condition,
     @Query('size') size,
+    @Query('page') page,
+    @Query('limit') limit,
     @Res() res,
   ) {
     try {
@@ -82,6 +84,8 @@ export class AdController {
         brand,
         condition,
         size,
+        page,
+        limit,
       );
       return res.status(HttpStatus.OK).json({
         data: ads,

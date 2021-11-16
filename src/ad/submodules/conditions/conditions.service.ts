@@ -28,7 +28,7 @@ export class ConditionsService {
     return await this.conditionRepository.find().exec();
   }
 
-  public async findByUrl(url: string): Promise<Condition & ConditionWithId> {
+  public async findByUrl(url: string): Promise<Condition & ConditionWithId> {
     const condition = await this.conditionRepository.findOne({ url: url });
     if (condition) return condition;
     else throw new BadRequestException('This condition is not exist!');

@@ -23,6 +23,7 @@ export class SizesService {
 
   public async create(input: CreateSizeDto): Promise<Size> {
     const size = await new this.sizeRepository(input);
+    size.categoryId = new Types.ObjectId(size.categoryId);
     await this.categoryService.findById(new Types.ObjectId(size.categoryId));
     await this.checkSizeFormat(input.size);
     return size.save();

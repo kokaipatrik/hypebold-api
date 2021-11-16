@@ -102,6 +102,8 @@ export class AdService {
     brandParam: string,
     conditionParam: string,
     sizeParam: string,
+    page: number,
+    limit: number
   ): Promise<any> {
     const category = categoryParam
       ? await this.categoryService.findByUrl(categoryParam)
@@ -116,23 +118,28 @@ export class AdService {
       ? await this.sizesService.findByUrlAndCategoryId(sizeParam, category._id)
       : null;
 
-    const pipeline = { $match: {} };
+    const match = { $match: {} };
+    const sort = { $sort: { "_id": 1 } };
+    const skipAggregate = (page && limit) ? { $skip: Number((page - 1) * limit) } : null;
+    const limitAggregate = (page && limit) ? { $limit: Number(limit) } : null;
+    const aggregate: Array<any> = [match, sort];
+
+    if (category !== null) match.$match['categoryId'] = category._id;
+    if (brand !== null) match.$match['brandId'] = brand._id;
+    if (condition !== null) match.$match['conditionId'] = condition._id;
+    if (size !== null) match.$match['sizeId'] = size[0]._id;
+
+    if (skipAggregate !== null && limitAggregate) aggregate.push(skipAggregate, limitAggregate);
+
+    const ads = await this.adRepository.aggregate(aggregate);
     const transformedAds = [];
-
-    if (category !== null) pipeline.$match['categoryId'] = category._id;
-    if (brand !== null) pipeline.$match['brandId'] = brand._id;
-    if (condition !== null) pipeline.$match['conditionId'] = condition._id;
-    if (size !== null) pipeline.$match['sizeId'] = size[0]._id;
-
-    const ads = await this.adRepository.aggregate([pipeline]);
 
     if (ads.length) {
       for (const ad of ads) {
         transformedAds.push(await this.transformAdData(ad));
       }
       return transformedAds;
-    }
-    else throw new BadRequestException('Ads are not exist!');
+    } else throw new BadRequestException('Ads are not exist!');
   }
 
   public async transformAdData(ad: Ad & AdWithId): Promise<TransformedAd> {
