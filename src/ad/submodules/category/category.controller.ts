@@ -53,8 +53,6 @@ export class CategoryController {
   }
 
   @Get('/:url')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
   public async getCategoryByUrl(@Res() res: any, @Param('url') url: string) {
     try {
       const category = await this.categoryService.findByUrl(url);

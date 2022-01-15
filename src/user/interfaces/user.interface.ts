@@ -7,6 +7,7 @@ export enum UserRole {
 
 export interface ValidatedUser {
   id: Types.ObjectId;
+  username: string;
   email: string;
   role: string;
 }

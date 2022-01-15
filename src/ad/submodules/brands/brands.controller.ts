@@ -53,8 +53,6 @@ export class BrandsController {
   }
 
   @Get('/:url')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
   public async getBrandByUrl(@Res() res: any, @Param('url') url: string) {
     try {
       const brand = await this.brandsService.findByUrl(url);
