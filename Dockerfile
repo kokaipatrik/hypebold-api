@@ -1,4 +1,4 @@
-FROM node:16
+FROM node:14
 
 ARG hypebold_secret_key
 ARG hypebold_mongo_uri
@@ -12,9 +12,9 @@ ENV HYPEBOLD_ADMIN_KEY=${hypebold_admin_key}
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 COPY package*.json ./
+RUN npm install @nestjs/cli -g
 RUN npm install
 COPY . .
-RUN npm install -g @nestjs/cli
 RUN npm run build
 EXPOSE 3000
 CMD ["npm", "run", "start:prod"]
