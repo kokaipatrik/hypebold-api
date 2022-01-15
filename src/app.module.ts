@@ -16,7 +16,7 @@ import { SizesModule } from './ad/submodules/sizes/sizes.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(process.env.HYPER_MONGO),
+    MongooseModule.forRoot(process.env.HYPEBOLD_MONGO),
     UserModule,
     AuthModule,
     AdModule,

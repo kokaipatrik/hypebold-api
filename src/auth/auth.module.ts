@@ -13,7 +13,7 @@ import { JwtStrategy } from './guards/jwt-auth.strategy';
     ConfigModule.forRoot(),
     PassportModule.register({ defaultStrategy: 'jwt', session: false }),
     JwtModule.register({
-      secret: process.env.HYPER_JWT_SECRET,
+      secret: process.env.HYPEBOLD_JWT_SECRET,
       signOptions: {
         expiresIn: 3600,
       },

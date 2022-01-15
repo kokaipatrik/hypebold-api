@@ -62,7 +62,7 @@ export class UserService {
   }
 
   public async validateAdminSecret(secret: string): Promise<boolean> {
-    if (process.env.HYPER_ADMIN_SECRET != secret)
+    if (process.env.HYPEBOLD_ADMIN_SECRET != secret)
       throw new UnauthorizedException('Admin secret is required.');
     return true;
   }

@@ -1,5 +1,5 @@
 {
-  "name": "hyper-api",
+  "name": "hypebold-api",
   "version": "0.0.1",
   "description": "",
   "author": "Patrik Kókai",
@@ -25,10 +25,10 @@
     "@nestjs/config": "^1.0.2",
     "@nestjs/core": "^8.0.0",
     "@nestjs/jwt": "^8.0.0",
+    "@nestjs/microservices": "^8.2.5",
     "@nestjs/mongoose": "^9.0.0",
     "@nestjs/passport": "^8.0.1",
     "@nestjs/platform-express": "^8.0.0",
-    "@nestjs/typeorm": "^8.0.2",
     "@types/bcrypt": "^5.0.0",
     "@types/mongodb": "^4.0.7",
     "@types/passport-jwt": "^3.0.6",
@@ -43,7 +43,6 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
-    "typeorm": "^0.2.38",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
