@@ -12,10 +12,7 @@ ENV HYPEBOLD_ADMIN_KEY=${hypebold_admin_key}
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 COPY package*.json ./
-COPY yarn.lock ./
-RUN yarn
-RUN npm install -g @nestjs/cli
-RUN yarn build
+RUN npm install
 COPY . .
 EXPOSE 3000
-CMD ["yarn", "start:prod"]
+CMD ["npm", "run", "start:prod"]
