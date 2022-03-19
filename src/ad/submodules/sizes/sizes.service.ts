@@ -13,6 +13,10 @@ export class SizeWithId {
   _id: Types.ObjectId;
 }
 
+export class SizeWithCategoryUrl {
+  categoryUrl: string;
+}
+
 @Injectable()
 export class SizesService {
   constructor(
@@ -30,7 +34,13 @@ export class SizesService {
   }
 
   public async findAll(): Promise<Array<Size>> {
-    return await this.sizeRepository.find().exec();
+    const elements = await this.sizeRepository.find().exec();
+
+    for (let elem in elements) {
+      elements[elem]['categoryUrl'] = (await this.categoryService.findById(new Types.ObjectId(elements[elem].categoryId))).url;
+    }
+
+    return elements;
   }
 
   public async findById(id: Types.ObjectId): Promise<Size> {

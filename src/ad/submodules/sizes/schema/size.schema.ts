@@ -18,6 +18,9 @@ export class Size {
   @Prop()
   categoryId: Types.ObjectId;
 
+  @Prop()
+  categoryUrl?: string;
+
   @Prop({ type: {} })
   size: ShoesSize | string;
 
