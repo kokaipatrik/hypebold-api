@@ -1,4 +1,4 @@
-FROM node:14
+FROM node:18
 
 ARG hypebold_secret_key
 ARG hypebold_mongo_uri
