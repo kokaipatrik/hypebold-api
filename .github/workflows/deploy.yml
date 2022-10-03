@@ -8,20 +8,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Publish to Github Packages Registry
+    - name: Publish to Docker Hub
       uses: elgohr/Publish-Docker-Github-Action@master
       env:
-        hypebold_secret_key: ${{ secrets.HYPEBOLD_SECRET_KEY }}
-        hypebold_mongo_uri: ${{ secrets.HYPEBOLD_MONGO_URI }}
-        hypebold_admin_key: ${{ secrets.HYPEBOLD_ADMIN_KEY }}
+        HYPEBOLD_MONGO: ${{ secrets.HYPEBOLD_MONGO }}
+        HYPEBOLD_JWT_SECRET: ${{ secrets.HYPEBOLD_JWT_SECRET }}
+        HYPEBOLD_ADMIN_SECRET: ${{ secrets.HYPEBOLD_ADMIN_SECRET }}
       with:
         name: kokaipatrik/hypebold-api
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         dockerfile: ./DockerfileProd
         tags: latest
-        buildargs: hypebold_secret_key, hypebold_mongo_uri, hypebold_admin_key
-    - name: Deploy package to digitalocean
+        buildargs: HYPEBOLD_MONGO, HYPEBOLD_JWT_SECRET, HYPEBOLD_ADMIN_SECRET
+    - name: Deploy package to DigitalOcean
       uses: appleboy/ssh-action@master
       env:
           GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}

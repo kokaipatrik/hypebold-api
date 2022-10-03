@@ -1,13 +1,13 @@
 FROM node:18
 
-ARG hypebold_secret_key
-ARG hypebold_mongo_uri
-ARG hypebold_admin_key
+ARG HYPEBOLD_MONGO
+ARG HYPEBOLD_JWT_SECRET
+ARG HYPEBOLD_ADMIN_SECRET
 
-ENV NODE_ENV production
-ENV HYPEBOLD_SECRET_KEY=${hypebold_secret_key}
-ENV HYPEBOLD_MONGO_URI=${hypebold_mongo_uri}
-ENV HYPEBOLD_ADMIN_KEY=${hypebold_admin_key}
+ENV NODE_ENV development
+ENV HYPEBOLD_MONGO=${HYPEBOLD_MONGO}
+ENV HYPEBOLD_JWT_SECRET=${HYPEBOLD_JWT_SECRET}
+ENV HYPEBOLD_ADMIN_SECRET=${HYPEBOLD_ADMIN_SECRET}
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
