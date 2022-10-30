@@ -10,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 
 import { User, UserDocument } from './schema/user.schema';
 import { RegisterUserDto } from './dto/register-user.dto';
+import { UserProfileDto } from './dto/user-profile.dto';
 import { UserRole } from './interfaces/user.interface';
 
 @Injectable()
@@ -26,6 +27,23 @@ export class UserService {
     });
     await this.isEmailRoleExist(user.email, role);
     return user.save();
+  }
+
+  public async postUserProfile(userId: Types.ObjectId, input: UserProfileDto): Promise<User> {
+    await this.findById(userId);
+    const user = await this.userRepository.findOneAndUpdate(
+      { _id: userId },
+      {
+
+        $push: {
+          profile: {
+            ...input,
+          }
+        },
+      },
+    );
+    if (user) return user;
+    throw new BadRequestException('Push operation failed.');
   }
 
   private async isEmailRoleExist(email: string, role: UserRole): Promise<void> {

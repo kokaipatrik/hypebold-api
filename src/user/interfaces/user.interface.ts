@@ -1,4 +1,5 @@
 import { Types } from 'mongoose';
+import { UserProfile } from '../schema/user.schema';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -10,4 +11,5 @@ export interface ValidatedUser {
   username: string;
   email: string;
   role: string;
+  profile: UserProfile;
 }
