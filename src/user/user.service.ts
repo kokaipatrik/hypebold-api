@@ -35,10 +35,10 @@ export class UserService {
       { _id: userId },
       {
 
-        $push: {
+        $set: {
           profile: {
-            ...input,
-          }
+            ...input
+          },
         },
       },
     );
