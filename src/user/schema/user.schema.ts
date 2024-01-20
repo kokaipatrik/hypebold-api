@@ -44,6 +44,9 @@ export class User {
   @Prop({ type: [Types.ObjectId], ref: 'Ad' })
   ads: Array<Types.ObjectId>;
 
+  @Prop({ type: [Types.ObjectId], ref: 'Block' })
+  blocks: Array<Types.ObjectId>;
+
   @Prop({ type: UserProfileDto })
   profile: UserProfile;
 }

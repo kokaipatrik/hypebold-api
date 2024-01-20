@@ -107,4 +107,21 @@ export class UserService {
     if (user) return user;
     throw new BadRequestException('Push operation failed.');
   }
+
+  public async pushBlockIdToBlocks(
+    userId: Types.ObjectId,
+    blockId: Types.ObjectId,
+  ): Promise<User> {
+    const user = await this.userRepository.findOneAndUpdate(
+      { _id: userId },
+      {
+        $push: {
+          blocks: blockId,
+        },
+      },
+    );
+
+    if (user) return user;
+    throw new BadRequestException('Push operation failed.');
+  }
 }

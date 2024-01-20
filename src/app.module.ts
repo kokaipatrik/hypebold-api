@@ -8,6 +8,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { AdModule } from './ad/ad.module';
 import { BrandsModule } from './ad/submodules/brands/brands.module';
+import { BlockModule } from './block/block.module';
 import { CategoryModule } from './ad/submodules/category/category.module';
 import { ConditionsModule } from './ad/submodules/conditions/conditions.module';
 import { CurrencyModule } from './ad/submodules/currency/currency.module';
@@ -22,6 +23,7 @@ import { SizesModule } from './ad/submodules/sizes/sizes.module';
     AuthModule,
     AdModule,
     BrandsModule,
+    BlockModule,
     CategoryModule,
     ConditionsModule,
     CurrencyModule,
