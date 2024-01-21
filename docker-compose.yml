@@ -10,8 +10,6 @@ services:
       - /usr/src/app/node_modules
     links:
       - mongo
-    env_file: 
-      - .env
   mongo:
     container_name: mongodb
     image: mongo:latest
