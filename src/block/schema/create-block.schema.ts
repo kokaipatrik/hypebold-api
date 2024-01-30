@@ -28,6 +28,6 @@ export class CreateBlock {
   data: any;
 }
 
-export type AdDocument = CreateBlock & Document;
+export type CreateBlockDocument = CreateBlock & Document;
 
 export const CreateBlockSchema = SchemaFactory.createForClass(CreateBlock);

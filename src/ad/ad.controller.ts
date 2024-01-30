@@ -6,6 +6,7 @@ import {
   Query,
   Res,
   Body,
+  HttpException,
   HttpStatus,
   UseGuards,
   Put,
@@ -15,14 +16,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { Express } from 'express';
-import { Multer } from 'multer';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { v4 as uuid } from 'uuid';
 
 import { AdService } from './ad.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
-import { ImageFileFilter } from './utils/file-upload.util';
 
 @Controller('ad')
 export class AdController {
@@ -47,21 +48,34 @@ export class AdController {
   }
 
   @UseInterceptors(
-    FilesInterceptor('image', 6, {
-      dest: './images',
-      fileFilter: ImageFileFilter,
+    FilesInterceptor('images', 6, {
+      fileFilter: (req: any, file: any, cb: any) => {
+        if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+          cb(null, true);
+        } else {
+          cb(new HttpException(`Unsupported file type ${extname(file.originalname)}`, HttpStatus.BAD_REQUEST), false);
+        }
+      },
       limits: {
         fileSize: 2097152,
       },
+      storage: diskStorage({
+        destination: './images',
+        filename: (req: any, file: any, cb: any) => {
+          if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+            cb(new Error('Only image files are allowed!'), false);
+          }
+
+          cb(null, `${uuid()}${extname(file.originalname)}`);
+      },
+      })
     }),
   )
   @Post('upload-images')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'user')
-  public uploadFile(@UploadedFiles() image: Express.Multer.File) {
-    return {
-      files: image,
-    };
+  public uploadFile(@UploadedFiles() images: Array<Express.Multer.File>) {
+    return images.map(file => file.filename);
   }
 
   @Get('images/:img')
